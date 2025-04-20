@@ -39,6 +39,8 @@ export const Text = styled.p`
     opacity: 50%;
     font-size: 16px;
     margin: 0.5rem 0;
+
+    text-decoration: ${({ isDone }) => (isDone ? 'line-through' : 'none')};
 `
 export const ActionArea = styled.div`
     display: flex;

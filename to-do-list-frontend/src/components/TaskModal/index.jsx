@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { ModalOverlay, ModalContent } from './styles'
+import { ModalOverlay, ModalContent, Title, Input, Button} from './styles'
 
 const TaskModal = ({ isOpen, onClose, onSave, editingTask }) => {
     const [description, setDescription] = useState('')
@@ -41,25 +41,25 @@ const TaskModal = ({ isOpen, onClose, onSave, editingTask }) => {
     return (
         <ModalOverlay onClick={onClose}>
             <ModalContent onClick={(e) => e.stopPropagation()}> {/**Clicar dentro do modal → não fecha o modal  */}
-                <h2>{editingTask ? 'Editar Tarefa' : 'Adicionar Tarefa'}</h2>
-                <input
+                <Title>{editingTask ? 'Editar Tarefa' : 'Adicionar Tarefa'}</Title>
+                <Input
                     type="text"
                     placeholder="Descrição da tarefa"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
                 />
-                <input
+                <Input
                     type="time"
                     value={time}
                     onChange={(e) => setTime(e.target.value)}
                 />
-                <input
+                <Input
                     type="date"
                     value={date}
                     onChange={(e) => setDate(e.target.value)}
                 />
-                <button onClick={handleSubmit}>Salvar</button>
-                <button onClick={onClose}>Cancelar</button>
+                <Button onClick={handleSubmit}>Salvar</Button>
+                <Button onClick={onClose}>Cancelar</Button>
             </ModalContent>
         </ModalOverlay>
     )

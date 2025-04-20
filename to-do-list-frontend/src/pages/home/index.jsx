@@ -21,7 +21,8 @@ function generateDays() {
       id: i + 1,
       text: daysOfWeek[date.getDay()],
       day: date.getDate(),
-      fullDate: date
+      fullDate: date,
+      formattedDate: date.toISOString().split('T')[0]
     })
   }
 
@@ -31,7 +32,7 @@ function generateDays() {
 const Home = () => {
   const [tasks, setTasks] = useState([])
   const [days, setDays] = useState(generateDays())
-  const [selectedDay, setSelectedDay] = useState(new Date().getDate()) // Guarda o dia selecionado pelo usuário
+  const [selectedDay, setSelectedDay] = useState(new Date().toISOString().split('T')[0]) // Guarda o dia selecionado pelo usuário
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingTask, setEditingTask] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
@@ -53,8 +54,13 @@ const Home = () => {
         // criar nova tarefa
        await api.post('/Task', taskToSend)
       }
-        const tasksResponse = await api.get('/Task')
-        setTasks(tasksResponse.data)
+      const response = searchTerm
+      ? await api.get(`/Task/GetDescription/${searchTerm}`)
+      : await api.get(`/Task/GetDate`, {
+          params: { dateAndTime: selectedDay }
+        })
+
+        setTasks(response.data)
         setEditingTask(null)
       
     } catch (e) {
@@ -84,20 +90,50 @@ const Home = () => {
     setIsModalOpen(true)
   }
 
+  const handleToggleTask = async (task) =>{
+    try {
+      const updated = {
+        ...task,
+        status: task.status === 'Completed' ? 'Pending' : 'Completed', // ou true/false
+      }
+
+      await api.put(`/Task/${task.id}`, updated)
+      const updatedTasks = tasks.map(t =>
+        t.id === task.id ? { ...t, status: updated.status } : t
+      )
+      setTasks(updatedTasks)
+    } catch (e) {
+      console.error('Erro ao atualizar status:', e)
+    }
+  }
+
   useEffect(() => {
     const fetchTasks = async () => {
       try {
-        const response = searchTerm
-          ? await api.get(`/Task/GetDescription/${searchTerm}`)
-          : await api.get('/Task')
-  
+        let response 
+        
+        if(searchTerm)
+        {
+          response = await api.get(`/Task/GetDescription/${searchTerm}`)
+        }
+        else if(selectedDay)
+        {
+          response = await api.get('/Task/GetDate', {
+            params: {dateAndTime: selectedDay}
+          })
+        }
+        else{
+          response = await api.get('/Task')
+        }
+        
+        
         setTasks(response.data)
       } catch (error) {
         console.error('Erro ao buscar tarefas:', error)
       }
     }
     fetchTasks()
-  }, [searchTerm, isModalOpen])
+  }, [searchTerm, isModalOpen, selectedDay])
 
   /*DaySelector passa o dia a serem mostrados, o dia que está atualmente selecionado e a função que atualiza o dia selecionado.*/
   return (
@@ -107,7 +143,7 @@ const Home = () => {
         <DaySelector days={days} selectedDay={selectedDay} onSelectDay={setSelectedDay} />
         <SearchBar value={searchTerm} onChange={setSearchTerm} />
         <Title>Suas tarefas:</Title>
-        <TaskList tasks={tasks} onDelete={handleDeleteTask} onEdit={handleEditTask} />
+        <TaskList tasks={tasks} onDelete={handleDeleteTask} onEdit={handleEditTask} onToggle={handleToggleTask} />
       </Content>
       <TaskModal
         isOpen={isModalOpen}

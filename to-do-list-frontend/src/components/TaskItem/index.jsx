@@ -3,13 +3,13 @@ import { Container, Checkbox, Text, TextArea, Time, ActionArea, ButtonIcon } fro
 import { MdDelete, MdEdit } from 'react-icons/md'
 
 
- const TaskItem = ({time, description, onDelete, onEdit, onToggle}) => {
+ const TaskItem = ({task, date, time, description, onDelete, onEdit, onToggle}) => {
   return (
     <Container>
-        <Checkbox type="checkbox" onChange={onToggle}/>
+        <Checkbox type="checkbox" onChange={() => onToggle(task)}/>
         <TextArea>
-            <Time>{time}</Time>
-            <Text>{description}</Text>
+            <Time>{date} {time}</Time>
+            <Text isDone={task.status === 'Completed'}>{description}</Text>
         </TextArea>
         <ActionArea>
             <ButtonIcon onClick={onEdit}><MdEdit color='#A3B18A'/></ButtonIcon>

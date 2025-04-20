@@ -8,9 +8,9 @@ const DaySelector = ({ days, selectedDay, onSelectDay }) => {
         <DatesContainer>
             {
                 days.map(day => (
-                    <DateItem key={day.id} isActive={day.day === selectedDay} onClick={() => onSelectDay(day.day)}>
-                        <DateButton isActive={day.day === selectedDay}>{day.day}</DateButton>
-                         <DayText isActive={day.day === selectedDay}>{day.text}</DayText>
+                    <DateItem key={day.id} isActive={day.formattedDate === selectedDay} onClick={() => onSelectDay(day.formattedDate)}>
+                        <DateButton isActive={day.formattedDate === selectedDay}>{day.day}</DateButton>
+                         <DayText isActive={day.formattedDate === selectedDay}>{day.text}</DayText>
                     </DateItem>
                 ))
             }

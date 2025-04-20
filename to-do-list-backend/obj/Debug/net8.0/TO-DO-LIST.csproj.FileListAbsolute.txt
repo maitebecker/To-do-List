@@ -502,3 +502,4 @@ C:\Users\Maitê Becker\DIO\PROJECT\to-do-list-backend\obj\Debug\net8.0\refint\TO
 C:\Users\Maitê Becker\DIO\PROJECT\to-do-list-backend\obj\Debug\net8.0\TO-DO-LIST.pdb
 C:\Users\Maitê Becker\DIO\PROJECT\to-do-list-backend\obj\Debug\net8.0\TO-DO-LIST.genruntimeconfig.cache
 C:\Users\Maitê Becker\DIO\PROJECT\to-do-list-backend\obj\Debug\net8.0\ref\TO-DO-LIST.dll
+C:\Users\Maitê Becker\DIO\PROJECT\to-do-list-backend\obj\Debug\net8.0\TO-DO-LIST.sourcelink.json
