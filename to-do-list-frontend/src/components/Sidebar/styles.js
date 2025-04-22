@@ -9,6 +9,7 @@ export const Container = styled.div`
     justify-content: space-between;
     align-items: center;
     padding: 47px 0; 
+    box-shadow: 0px 0px 2px 2px rgba(0, 0, 0, 0.2);
 `
 
 export const User = styled.div`
@@ -23,7 +24,7 @@ export const UserText = styled.p`
     font-weight: 700
 `
 
-export const Task = styled.div`
+export const Item = styled.div`
     display: flex;
     justify-content: space-around;
     align-items: center;
@@ -32,6 +33,7 @@ export const Task = styled.div`
 
 export const TaskText = styled.p`
     font-size: 17px;
+    font-weight: 700
 `
 export const Button = styled.button`
   width: 48px;

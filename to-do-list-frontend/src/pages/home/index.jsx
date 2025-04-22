@@ -6,16 +6,16 @@ import { DaySelector } from '../../components/DaySelector'
 import { SearchBar } from '../../components/SearchBar'
 import { TaskModal } from '../../components/TaskModal'
 import { api } from '../../services/api';
+import CalendarModal from '../../components/CalendarModal'
 
 const daysOfWeek = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab']
 
-function generateDays() {
-  const today = new Date()
+function generateDays(baseDate = new Date()) {
   const days = []
 
   for (let i = 0; i < 7; i++) {
     const date = new Date()
-    date.setDate(today.getDate() + i)
+    date.setDate(baseDate.getDate() + i)
 
     days.push({
       id: i + 1,
@@ -36,6 +36,8 @@ const Home = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingTask, setEditingTask] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
+  const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
+
 
   const handleAddTask = async (newTask) => {
     setIsModalOpen(false)
@@ -52,17 +54,17 @@ const Home = () => {
         await api.put(`/Task/${newTask.id}`, taskToSend)
       } else {
         // criar nova tarefa
-       await api.post('/Task', taskToSend)
+        await api.post('/Task', taskToSend)
       }
       const response = searchTerm
-      ? await api.get(`/Task/GetDescription/${searchTerm}`)
-      : await api.get(`/Task/GetDate`, {
+        ? await api.get(`/Task/GetDescription/${searchTerm}`)
+        : await api.get(`/Task/GetDate`, {
           params: { dateAndTime: selectedDay }
         })
 
-        setTasks(response.data)
-        setEditingTask(null)
-      
+      setTasks(response.data)
+      setEditingTask(null)
+
     } catch (e) {
       console.error(`Erro ao buscar tarefas: `, e)
     }
@@ -90,7 +92,7 @@ const Home = () => {
     setIsModalOpen(true)
   }
 
-  const handleToggleTask = async (task) =>{
+  const handleToggleTask = async (task) => {
     try {
       const updated = {
         ...task,
@@ -108,37 +110,40 @@ const Home = () => {
   }
 
   useEffect(() => {
+    const newBaseDate = new Date(selectedDay)
+    setDays(generateDays(newBaseDate))
+  }, [selectedDay])
+
+  useEffect(() => {
     const fetchTasks = async () => {
       try {
-        let response 
-        
-        if(searchTerm)
-        {
+        let response
+
+        if (searchTerm) {
           response = await api.get(`/Task/GetDescription/${searchTerm}`)
         }
-        else if(selectedDay)
-        {
+        else if (selectedDay) {
           response = await api.get('/Task/GetDate', {
-            params: {dateAndTime: selectedDay}
+            params: { dateAndTime: selectedDay }
           })
         }
-        else{
+        else {
           response = await api.get('/Task')
         }
-        
-        
+
+
         setTasks(response.data)
       } catch (error) {
         console.error('Erro ao buscar tarefas:', error)
       }
     }
     fetchTasks()
-  }, [searchTerm, isModalOpen, selectedDay])
+  }, [searchTerm, selectedDay])
 
   /*DaySelector passa o dia a serem mostrados, o dia que está atualmente selecionado e a função que atualiza o dia selecionado.*/
   return (
     <Container>
-      <Sidebar onAddTask={() => setIsModalOpen(true)} />
+      <Sidebar onAddTask={() => setIsModalOpen(true)} onOpenCalendar={() => setIsCalendarModalOpen(true)} />
       <Content>
         <DaySelector days={days} selectedDay={selectedDay} onSelectDay={setSelectedDay} />
         <SearchBar value={searchTerm} onChange={setSearchTerm} />
@@ -151,6 +156,11 @@ const Home = () => {
         onSave={handleAddTask} // essa função adiciona a tarefa
         editingTask={editingTask}
       />
+      <CalendarModal 
+        isOpen={isCalendarModalOpen}
+        onClose={() => setIsCalendarModalOpen(false)}
+        selectedDate={selectedDay}
+        onSelectDate={setSelectedDay} />
     </Container>
   )
 }

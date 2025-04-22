@@ -4,11 +4,16 @@ import { MdDelete, MdEdit } from 'react-icons/md'
 
 
  const TaskItem = ({task, date, time, description, onDelete, onEdit, onToggle}) => {
+  const formatDate = (isoDateString) => {
+    const [year, month, day] = isoDateString.split('-')
+    return `${day}/${month}/${year}`
+  }
+  
   return (
     <Container>
         <Checkbox type="checkbox" onChange={() => onToggle(task)}/>
         <TextArea>
-            <Time>{date} {time}</Time>
+            <Time>{formatDate(date)} {time}</Time>
             <Text isDone={task.status === 'Completed'}>{description}</Text>
         </TextArea>
         <ActionArea>
