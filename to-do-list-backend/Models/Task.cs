@@ -11,4 +11,11 @@ public class Task
     public string Date => DateAndTime.ToString("yyyy-MM-dd");
     public EnumTaskStatus Status {get; set;}
 
+    // Foreign key
+    public int UserId { get; set; }
+    
+    [JsonIgnore]
+    // Propriedade de navegação
+    public User? User { get; set; }
+
 }

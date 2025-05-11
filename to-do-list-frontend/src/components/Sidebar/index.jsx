@@ -1,15 +1,15 @@
 import React from 'react'
-import userImage from '../../assets/user.png';
 import calendar from '../../assets/calendar.png';
+import logo from '../../assets/logo.png'
 
-import {Container, User, UserText, Item, TaskText, Button} from './styles'
+import {Container, User, UserText, Item, TaskText, Button, Img} from './styles'
 
-const Sidebar = ({onAddTask, onOpenCalendar}) => {
+const Sidebar = ({onAddTask, onOpenCalendar, userName}) => {
   return (
     <Container>
         <User>
-            <img src={userImage} alt="user" />
-            <UserText>Maitê Becker</UserText>
+          <Img src={logo} alt="logo" />
+            <UserText>{} Olá! {userName}</UserText>
         </User>
         <Item>
             <Button onClick={onOpenCalendar}><img src={calendar} alt="calendário" /></Button>

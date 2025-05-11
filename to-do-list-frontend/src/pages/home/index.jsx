@@ -11,22 +11,25 @@ import CalendarModal from '../../components/CalendarModal'
 const daysOfWeek = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab']
 
 function generateDays(baseDate = new Date()) {
-  const days = []
+  const days = [];
+
+  const dayOfWeek = baseDate.getDay();
+  const sunday = new Date(baseDate);
+  sunday.setDate(baseDate.getDate() - dayOfWeek);
 
   for (let i = 0; i < 7; i++) {
-    const date = new Date()
-    date.setDate(baseDate.getDate() + i)
+    const date = new Date(sunday);
+    date.setDate(sunday.getDate() + i);
 
     days.push({
       id: i + 1,
-      text: daysOfWeek[date.getDay()],
+      text: daysOfWeek[(sunday.getDay() + i) % 7], // pega o nome do dia também sem depender do objeto alterado
       day: date.getDate(),
       fullDate: date,
       formattedDate: date.toISOString().split('T')[0]
-    })
+    });
   }
-
-  return days
+  return days;
 }
 
 const Home = () => {
@@ -37,6 +40,7 @@ const Home = () => {
   const [editingTask, setEditingTask] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [isCalendarModalOpen, setIsCalendarModalOpen] = useState(false);
+  const [userName, setUserName] = useState('');
 
 
   const handleAddTask = async (newTask) => {
@@ -110,9 +114,13 @@ const Home = () => {
   }
 
   useEffect(() => {
-    const newBaseDate = new Date(selectedDay)
-    setDays(generateDays(newBaseDate))
-  }, [selectedDay])
+    //ajuste por causa do fuso horário
+    const [year, month, day] = selectedDay.split('-').map(Number);
+    const newBaseDate = new Date(year, month - 1, day); //subtrair um, pois no JS o mês começa em zero
+
+    setDays(generateDays(newBaseDate));
+  }, [selectedDay]);
+
 
   useEffect(() => {
     const fetchTasks = async () => {
@@ -140,10 +148,26 @@ const Home = () => {
     fetchTasks()
   }, [searchTerm, selectedDay])
 
+  useEffect(() => {
+    const fetchUserName = async () => {
+      try {
+        const response = await api.get('/user/me'); // faz GET com token já incluso via axios
+        console.log(response)
+        setUserName(response.data.name); // depende do campo que seu back está retornando
+      } catch (error) {
+        console.error('Erro ao buscar nome do usuário:', error);
+      }
+    }
+
+    fetchUserName();
+  }, []);
+
+
+
   /*DaySelector passa o dia a serem mostrados, o dia que está atualmente selecionado e a função que atualiza o dia selecionado.*/
   return (
     <Container>
-      <Sidebar onAddTask={() => setIsModalOpen(true)} onOpenCalendar={() => setIsCalendarModalOpen(true)} />
+      <Sidebar onAddTask={() => setIsModalOpen(true)} onOpenCalendar={() => setIsCalendarModalOpen(true)} userName={userName} />
       <Content>
         <DaySelector days={days} selectedDay={selectedDay} onSelectDay={setSelectedDay} />
         <SearchBar value={searchTerm} onChange={setSearchTerm} />
@@ -156,7 +180,7 @@ const Home = () => {
         onSave={handleAddTask} // essa função adiciona a tarefa
         editingTask={editingTask}
       />
-      <CalendarModal 
+      <CalendarModal
         isOpen={isCalendarModalOpen}
         onClose={() => setIsCalendarModalOpen(false)}
         selectedDate={selectedDay}

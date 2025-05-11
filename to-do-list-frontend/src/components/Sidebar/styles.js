@@ -49,3 +49,9 @@ export const Button = styled.button`
   justify-content: center;
   cursor: pointer;
 `
+
+export const Img = styled.img`
+  width: 48px;
+  height: 48px;
+
+`
